@@ -1,5 +1,38 @@
 {
-    "cSpell.words": [
-        "PKCE"
-    ]
+  "extensions.ignoreRecommendations": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "todo-tree.tree.showScanModeButton": false,
+  "todo-tree.highlights.enabled": true,
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "todo",
+    "hack",
+    "fixme",
+    "bug",
+    "xxx",
+    "Todo",
+    "ToDo",
+    "Hack",
+    "Fixme",
+    "FixMe",
+    "Bug"
+  ],
+  "cSpell.words": [
+    "Devtools",
+    "fontawesome",
+    "fortawesome",
+    "maxlength",
+    "memoized",
+    "minlength",
+    "ngrx",
+    "upsert"
+  ]
 }

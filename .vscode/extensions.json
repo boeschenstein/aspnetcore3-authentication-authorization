@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "angular.ng-template",
+    "johnpapa.angular2",
+    "natewallace.angular2-inline",
+    "steoates.autoimport",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "gruntfuggly.todo-tree",
+    "streetsidesoftware.code-spell-checker",
+	"yzhang.markdown-all-in-one"
+  ]
+}
