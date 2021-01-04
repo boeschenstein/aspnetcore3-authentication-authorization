@@ -1,16 +1,13 @@
-# ASP.NET Core 3.1 - Authentication - Authorization
-
-TODO / WIP - this content is not ready yet
+# ASP.NET Core 3 + 5 - Authentication - Authorization
 
 ## Content
 
-- [ASP.NET Core 3.1 - Authentication - Authorization](#aspnet-core-31---authentication---authorization)
+- [ASP.NET Core 3 + 5 - Authentication - Authorization](#aspnet-core-3--5---authentication---authorization)
   - [Content](#content)
   - [Goal](#goal)
   - [Authentication (know who you are)](#authentication-know-who-you-are)
     - [Definitions](#definitions)
     - [Scheme Actions](#scheme-actions)
-    - [OpenID Servers](#openid-servers)
     - [Login Procedure](#login-procedure)
     - [Add Authorize Attribute to all WebApi Endpoints](#add-authorize-attribute-to-all-webapi-endpoints)
     - [Configure Authentication (Example: Google)](#configure-authentication-example-google)
@@ -54,14 +51,6 @@ There are three scheme actions.
 - **Authenticate** is about how the claims principle gets reconstructed on every request. (Cookie/Token)
 - **Challenge** determines what happens if the user tries to access a resource for which authentication is required.
 - **Forbid** determines what happens if the user accesses a resource she can't access because she doesn't have the rights.
-
-### OpenID Servers
-
-- <https://github.com/openiddict/openiddict-core>
-- <https://github.com/IdentityServer/IdentityServer4>
-- SPA Workflow: <https://auth0.com/docs/flows>
-  - From 2019: [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://auth0.com/docs/flows/concepts/auth-code-pkce)
-  - Before 2019: [Implicit Flow](https://auth0.com/docs/flows/concepts/implicit)
 
 ### Login Procedure
 
@@ -114,20 +103,15 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Conference}/{action=Index}/{id?}");
-    });
+    app.UseEndpoints(endpoints =>    { ...  });
 }
 ```
 
 ## Authorization
 
-- Role-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-3.1>
-- Claim-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-3.1>
-- Policy-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1>
+- Role-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles>
+- Claim-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims>
+- Policy-based authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies>
 
 ### Roles
 
@@ -149,12 +133,14 @@ A "boolean" functionality: if the user is in a role, he has access to the functi
 
 ### Claims
 
-- Key Value Pair. Examples:
-  - UserId = `<userId>`
-  - Email = `<email>`
+Key Value Pair. Examples:
+
+- UserId = `<userId>`
+- Email = `<email>`
 - User Property
 - Describes the User
 - A user can have many claims (Admin has Admin-Clain and User-Claim)
+- Claim usually contains Role(s)
 
 ### Policy
 
@@ -175,7 +161,7 @@ You can use:
                  +--------------+
 ```
 
-Details: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1>
+Details: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies>
 
 #### IAuthorizationFilter (poor way)
 
@@ -189,7 +175,6 @@ public class YearsWorkedAttribute : TypeFilterAttribute
     }
 }
 
-// todo: tbv
 public class AuthorizeFilterBase : IAuthorizationFilter
 {
     public readonly IWebHostEnvironment _env;
@@ -204,7 +189,6 @@ public class AuthorizeFilterBase : IAuthorizationFilter
     }
 }
 
-//
 public class YearsWorkedAuthorizeFilter : AuthorizeFilterBase
 {
     public int Years {get; set;}
@@ -214,7 +198,8 @@ public class YearsWorkedAuthorizeFilter : AuthorizeFilterBase
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         // bool isDevelopment = _env.IsDevelopment();
-        var user = context.HttpContext.User;
+
+        ClaimsPrincipal user = context.HttpContext.User; // User from IIS
 
         if (!user.IsAuthenticated) {
             context.Result = new UnauthorizedResult();
@@ -234,7 +219,6 @@ public class YearsWorkedAuthorizeFilter : AuthorizeFilterBase
 ```
 
 ``` c#
-// todo: webapi, not mvc
 public class ClaimsController : Controller
 {
     public IActionResult Index() => View();
@@ -252,7 +236,9 @@ public class ClaimsController : Controller
 
 #### IAuthorizationFilter (better way)
 
-Source: <https://github.com/T0shik/rolesvsclaimsvspolicy>
+Improvement: Have readable policies: use AddAuthorization().
+
+Source: <https://github.com/T0shik/rolesvsclaimsvspolicy>\
 Youtube: <https://www.youtube.com/watch?v=cbtK3U2aOlg>
 
 ``` c#
@@ -288,15 +274,16 @@ namespace Claims.PolicyHandlers
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, MinimumYearsWorkedRequirement requirement)
         {
-            if (!context.User.Identity.IsAuthenticated)
+            // User from IIS: context.User
+            if (!context.User.Identity.IsAuthenticated) {
                 return Task.CompletedTask;
-
+            }
             var started = context.User.Claims.FirstOrDefault(x => x.Type == "DateStarted").Value;
             var dateStarted = DateTime.Parse(started);
 
-            if (DateTime.Now.Subtract(dateStarted).TotalDays > 365 * requirement.Years)
+            if (DateTime.Now.Subtract(dateStarted).TotalDays > 365 * requirement.Years) {
                 context.Succeed(requirement);
-
+            }
             return Task.CompletedTask;
         }
     }
@@ -304,7 +291,6 @@ namespace Claims.PolicyHandlers
 ```
 
 ``` c#
-// todo: webapi, not mvc
 public class PolicyController : Controller
 {
     public IActionResult Index() => View();
@@ -346,9 +332,9 @@ Features:
 
 Links:
 
-- Documentation: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio>
+- Documentation: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity>
 
-- Custom Data Stores: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity-custom-storage-providers?view=aspnetcore-3.1>
+- Custom Data Stores: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity-custom-storage-providers>
 
 ## Microsoft Identity platform
 
@@ -369,8 +355,12 @@ Links:
 ## Links
 
 - Microsoft Identity Platform: <https://docs.microsoft.com/en-us/azure/active-directory/develop/>
-- ASP.NET Identity: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio>
-- Security: <https://docs.microsoft.com/en-us/aspnet/core/security/?view=aspnetcore-3.1>
-- Authentication: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-3.1>
-- Authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-3.1>
-- Policy: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1>
+- ASP.NET Identity: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity>
+- Security: <https://docs.microsoft.com/en-us/aspnet/core/security/>
+  - Authentication: <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/>
+  - Authorization: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction>
+  - Policy: <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies>
+
+Related
+
+- OIDC (OpenID Connect): <https://github.com/boeschenstein/angular9-oidc-identityserver4>
