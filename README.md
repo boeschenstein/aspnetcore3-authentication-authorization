@@ -100,10 +100,9 @@ public void ConfigureServices(IServiceCollection services)
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     ...
-    app.UseAuthentication();
+    app.UseAuthentication(); // After UseRouting, Before UseEndpoints
     app.UseAuthorization();
-
-    app.UseEndpoints(endpoints =>    { ...  });
+    ...
 }
 ```
 
