@@ -351,31 +351,6 @@ Links:
 - Build a customer-facing app that signs in social & local identities
 - Call Microsoft Graph API
 
-## IIS (Internet Information Service)
-
-### .NET CLR Version
-
-For .NET Core or .NET 6 choose: `No Managed Code` (App Pool Settings for your app pool)
-
-### Windows Authentication
-
-To Enable "Windows Authentication", open "Authentication" on your website and 
-- disable "Anonymous Authentication" and 
-- enable "Windows Authentication".
-
-### Require Client Certificate
-
-To force the browser to request a client certificate, add this setting in IIS:
-
-> SSL Settings: Client Certifications: [x] require
-
-Now you get access to the certificate:
-
-```cs
-var clientCertificate = await context.HttpContext.Connection.GetClientCertificateAsync(); // async
-var clientCertificate = context.HttpContext.Connection.ClientCertificate; // sync
-```
-
 ## Links
 
 - Microsoft Identity Platform: <https://docs.microsoft.com/en-us/azure/active-directory/develop/>
