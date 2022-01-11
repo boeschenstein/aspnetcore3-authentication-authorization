@@ -1,4 +1,4 @@
-# ASP.NET Core 3 + 5 - Authentication - Authorization
+# ASP.NET Core 3 + 5 - Authentication - Authorization (policy based)
 
 ## Content
 
