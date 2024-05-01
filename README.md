@@ -315,7 +315,7 @@ public class PolicyController : Controller
 public IActionResult TwoYearRewards() => View();
 ```
 
-It is probably better to handle the OR in the handler.
+It is better to handle the AND in a new handler, I think.
 
 Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#requirements>
 
@@ -324,11 +324,24 @@ Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/po
 >In cases where you want evaluation to be on an OR basis, implement multiple handlers for a single requirement
 
 ```cs
-services.AddSingleton<IAuthorizationHandler, IsEditorHandler>(); // this policy ...
-services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();  // OR this policy
+public class BuildingEntryRequirement : IAuthorizationRequirement { }
+
+services.AddAuthorization(options =>
+{
+    options.AddPolicy("BadgeEntryOrTemporarySticker", policy => policy.Requirements.Add(new BuildingEntryRequirement()));
+});
+
+public class BadgeEntryHandler : AuthorizationHandler<BuildingEntryRequirement> { ... }
+
+public class TemporaryStickerHandler : AuthorizationHandler<BuildingEntryRequirement> { ... }
+
+// register both handlers:
+services.AddSingleton<IAuthorizationHandler, BadgeEntryHandler>(); // this handler ...
+services.AddSingleton<IAuthorizationHandler, TemporaryStickerHandler>();  // OR this handler
 ```
 
 Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#why-would-i-want-multiple-handlers-for-a-requirement>
+Examples for AND and OR: <https://coderethinked.com/multiple-authorization-handlers-for-the-same-requirement-in-asp-net-core/>
 
 ## ASP.NET Core Identity
 
