@@ -305,6 +305,31 @@ public class PolicyController : Controller
 }
 ```
 
+### Multiple policies - AND based
+
+> multiple authorization requirements added to a single authorization policy are treated on an AND basis
+
+```cs
+[Authorize(Policy = "WorkedTwoYears")] // this policy ...
+[Authorize(Policy = "IsEditor")]       // AND also this policy
+public IActionResult TwoYearRewards() => View();
+```
+
+It is probably better to handle the OR in the handler.
+
+Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#requirements>
+
+### Multiple policies - OR based
+
+>In cases where you want evaluation to be on an OR basis, implement multiple handlers for a single requirement
+
+```cs
+services.AddSingleton<IAuthorizationHandler, IsEditorHandler>(); // this policy ...
+services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();  // OR this policy
+```
+
+Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#why-would-i-want-multiple-handlers-for-a-requirement>
+
 ## ASP.NET Core Identity
 
 Create a new project in Visual Studio, change "Authentication", select "Individual User Accounts". (Store user accounts in-app). Alternatively use this:
