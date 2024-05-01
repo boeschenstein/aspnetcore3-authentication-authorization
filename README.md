@@ -305,7 +305,7 @@ public class PolicyController : Controller
 }
 ```
 
-### Multiple policies - AND based
+#### Multiple policies - AND based
 
 > multiple authorization requirements added to a single authorization policy are treated on an AND basis
 
@@ -319,7 +319,7 @@ It is better to handle the AND in a new handler, I think.
 
 Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#requirements>
 
-### Multiple policies - OR based
+#### Multiple policies - OR based
 
 >In cases where you want evaluation to be on an OR basis, implement multiple handlers for a single requirement
 
@@ -342,6 +342,10 @@ services.AddSingleton<IAuthorizationHandler, TemporaryStickerHandler>();  // OR 
 
 Source: <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0#why-would-i-want-multiple-handlers-for-a-requirement>
 Examples for AND and OR: <https://coderethinked.com/multiple-authorization-handlers-for-the-same-requirement-in-asp-net-core/>
+
+#### Apply Policy to all controllers
+
+Use a base class...
 
 ## ASP.NET Core Identity
 
