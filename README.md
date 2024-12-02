@@ -405,3 +405,4 @@ Links:
 Related
 
 - OIDC (OpenID Connect): <https://github.com/boeschenstein/angular9-oidc-identityserver4>
+- Working with custom authentication schemes in ASP.NET Core 8.0 <https://matteosonoio.it/aspnet-core-authentication-schemes/>
